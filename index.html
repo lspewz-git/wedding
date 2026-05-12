@@ -318,23 +318,23 @@
                     <div
                         class="absolute -left-[31px] top-1 w-2 h-2 bg-[#00f2ff] rounded-full shadow-[0_0_10px_#00f2ff]">
                     </div>
-                    <p class="terminal-log text-gray-500 text-xs mb-1">15:00</p>
-                    <h4 class="text-lg font-bold text-[#00f2ff]">СБОР ГОСТЕЙ</h4>
-                    <p class="text-sm text-gray-400">Welcome-зона и напитки.</p>
+                    <p class="terminal-log text-gray-500 text-xs mb-1">12:15</p>
+                    <h4 class="text-lg font-bold text-[#00f2ff]">ЦЕРЕМОНИЯ В ЗАГСЕ</h4>
+                    <p class="text-sm text-gray-400">Официальная привязка данных.</p>
                 </div>
                 <div class="relative">
                     <div
                         class="absolute -left-[31px] top-1 w-2 h-2 bg-[#ccff00] rounded-full shadow-[0_0_10px_#ccff00]">
                     </div>
-                    <p class="terminal-log text-gray-500 text-xs mb-1">16:00</p>
-                    <h4 class="text-lg font-bold text-[#ccff00]">ЦЕРЕМОНИЯ</h4>
-                    <p class="text-sm text-gray-400">Официальная привязка данных.</p>
+                    <p class="terminal-log text-gray-500 text-xs mb-1">16:30</p>
+                    <h4 class="text-lg font-bold text-[#ccff00]">НАЧАЛО МЕРОПРИЯТИЯ</h4>
+                    <p class="text-sm text-gray-400">Общий сбор в ресторане.</p>
                 </div>
                 <div class="relative">
                     <div
                         class="absolute -left-[31px] top-1 w-2 h-2 bg-[#00f2ff] rounded-full shadow-[0_0_10px_#00f2ff]">
                     </div>
-                    <p class="terminal-log text-gray-500 text-xs mb-1">18:00</p>
+                    <p class="terminal-log text-gray-500 text-xs mb-1">17:00</p>
                     <h4 class="text-lg font-bold text-[#00f2ff]">БАНКЕТ</h4>
                     <p class="text-sm text-gray-400">Вечеринка, ужин и высокая нагрузка.</p>
                 </div>
@@ -344,21 +344,63 @@
                     </div>
                     <p class="terminal-log text-gray-500 text-xs mb-1">22:00</p>
                     <h4 class="text-lg font-bold text-[#ccff00]">ФИНАЛ</h4>
-                    <p class="text-sm text-gray-400">Торт и праздничный запуск фейерверков.</p>
+                    <p class="text-sm text-gray-400">Торт и постепенное окончание вечера.</p>
                 </div>
             </div>
         </div>
     </section>
+
+
+
     <!-- The Grid (Map) -->
-    <section class="px-6">
+    <section class="px-6 py-12">
         <div class="max-w-4xl mx-auto section-content">
-            <div class="flex flex-col md:flex-row justify-between items-end mb-8 gap-4">
+            <div class="grid md:grid-cols-2 gap-8 mb-8 items-start">
+                <!-- Address -->
                 <div>
-                    <h2 class="text-xs uppercase tracking-[0.5em] text-[#00f2ff] mb-2">Location_Data</h2>
-                    <p class="text-2xl font-bold tracking-tight">ул. Ширямова, д. 35</p>
+                    <h2 class="text-xs uppercase tracking-[0.5em] text-[#00f2ff] mb-4 flex items-center">
+                        <i data-lucide="map-pin" class="mr-2 w-4 h-4"></i> Location_Data
+                    </h2>
+                    <div class="glass-card p-6 border-l-4 border-[#00f2ff] h-full">
+                        <div class="space-y-3">
+                            <div>
+                                <p class="text-xs text-[#00f2ff] uppercase tracking-widest mb-1 opacity-50">Base_Name</p>
+                                <p class="text-2xl font-bold tracking-tight text-white">ФИАНИТ</p>
+                            </div>
+                            <div>
+                                <p class="text-xs text-gray-400 leading-relaxed italic">
+                                    Эко-модуль в окружении лесного массива. Тихая гавань для перезагрузки системы.
+                                </p>
+                            </div>
+                            <div class="pt-2 border-t border-white/5">
+                                <p class="text-sm font-bold text-white mb-1">ул. Ширямова, д. 35</p>
+                                <p class="text-gray-500 text-[10px] uppercase tracking-widest">г. Иркутск // Sector 38</p>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                <div class="flex items-center gap-2 text-gray-500 text-xs uppercase tracking-widest">
-                    <i data-lucide="map-pin" class="w-4 h-4 text-[#ccff00]"></i> г. Иркутск
+                <!-- Gifts Protocol -->
+                <div>
+                    <h2 class="text-xs uppercase tracking-[0.5em] text-[#ccff00] mb-4 flex items-center">
+                        <i data-lucide="database" class="mr-2 w-4 h-4"></i> Resource_Transfer
+                    </h2>
+                    <div class="glass-card p-6 border-l-4 border-[#ccff00] h-full flex flex-col justify-between">
+                        <div class="space-y-3">
+                            <div>
+                                <p class="text-xs text-[#ccff00] uppercase tracking-widest mb-1 opacity-50">Data_Format</p>
+                                <p class="text-2xl font-bold tracking-tight text-white uppercase">Подарки</p>
+                            </div>
+                            <div>
+                                <p class="text-xs text-gray-400 leading-relaxed">
+                                    Ваше присутствие — главный ресурс. Мы будем признательны за <span class="text-white font-bold text-glow">компактные носители</span> (в конвертах).
+                                </p>
+                            </div>
+                            <div class="pt-2 border-t border-white/5">
+                                <p class="text-xs text-[#ccff00] font-bold mb-1 uppercase">No_Bio_Assets</p>
+                                <p class="text-gray-500 text-[10px] uppercase tracking-widest">Вместо цветов: <span class="text-white font-bold">Винтажный эликсир</span> (вино)</p>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
             <div class="relative p-1 neon-border rounded-xl overflow-hidden">
