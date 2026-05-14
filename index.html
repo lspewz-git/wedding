@@ -37,6 +37,7 @@
             color: #ffffff;
             font-family: 'JetBrains Mono', monospace;
             overflow-x: hidden;
+            cursor: none; /* Hide default cursor */
         }
 
         section {
@@ -210,6 +211,17 @@
             outline: none;
         }
 
+        /* Pulse Highlight Animation */
+        @keyframes neon-pulse-lime {
+            0% { box-shadow: 0 0 5px rgba(204, 255, 0, 0.2); border-color: rgba(204, 255, 0, 0.3); }
+            50% { box-shadow: 0 0 20px rgba(204, 255, 0, 0.6); border-color: rgba(204, 255, 0, 1); }
+            100% { box-shadow: 0 0 5px rgba(204, 255, 0, 0.2); border-color: rgba(204, 255, 0, 0.3); }
+        }
+
+        .highlight-pulse {
+            animation: neon-pulse-lime 2s infinite;
+        }
+
         .loader {
             width: 20px;
             height: 20px;
@@ -302,19 +314,112 @@
             opacity: 1;
         }
 
-        @media (max-width: 768px) {
-            .progress-nav {
-                right: 0.75rem;
-                gap: 1rem;
-            }
-            .progress-line-container {
-                height: 80px;
-            }
+        /* CRT Overlay Effect */
+        .crt-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.1) 50%), 
+                        linear-gradient(90deg, rgba(255, 0, 0, 0.03), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.03));
+            background-size: 100% 3px, 3px 100%;
+            pointer-events: none;
+            z-index: 10000;
+            opacity: 0.3;
+        }
+
+        .crt-overlay::after {
+            content: " ";
+            display: block;
+            position: absolute;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            right: 0;
+            background: rgba(18, 16, 16, 0.1);
+            opacity: 0;
+            z-index: 10000;
+            pointer-events: none;
+            animation: flicker 0.15s infinite;
+        }
+
+        @keyframes flicker {
+            0% { opacity: 0.12371; }
+            5% { opacity: 0.10398; }
+            10% { opacity: 0.14769; }
+            15% { opacity: 0.14118; }
+            20% { opacity: 0.10381; }
+            25% { opacity: 0.11324; }
+            30% { opacity: 0.11124; }
+            35% { opacity: 0.17028; }
+            40% { opacity: 0.12643; }
+            45% { opacity: 0.12359; }
+            50% { opacity: 0.13324; }
+            55% { opacity: 0.10312; }
+            60% { opacity: 0.14512; }
+            65% { opacity: 0.12213; }
+            70% { opacity: 0.16012; }
+            75% { opacity: 0.10213; }
+            80% { opacity: 0.11023; }
+            85% { opacity: 0.12312; }
+            90% { opacity: 0.13123; }
+            95% { opacity: 0.14123; }
+            100% { opacity: 0.11213; }
+        }
+
+        /* Custom Cursor */
+        #custom-cursor {
+            width: 20px;
+            height: 20px;
+            border: 1px solid var(--neon-blue);
+            position: fixed;
+            pointer-events: none;
+            z-index: 999999;
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            transition: width 0.3s, height 0.3s, border-color 0.3s;
+            mix-blend-mode: difference;
+        }
+
+        #custom-cursor::after {
+            content: '';
+            width: 4px;
+            height: 4px;
+            background: var(--electric-lime);
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            border-radius: 50%;
+        }
+
+        #custom-cursor.hovering {
+            width: 50px;
+            height: 50px;
+            border-color: var(--electric-lime);
+            background: rgba(204, 255, 0, 0.1);
+        }
+
+
+        /* Terminal Logging Animation */
+        .terminal-log-output {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 10px;
+            color: var(--electric-lime);
+            text-align: left;
+            margin-top: 1rem;
+            max-height: 100px;
+            overflow: hidden;
+            opacity: 0.8;
         }
     </style>
 </head>
 
 <body class="grid-bg">
+    <div class="crt-overlay"></div>
+    <div id="custom-cursor"></div>
+
     <!-- Important Info Modal -->
     <div id="info-modal" class="modal-container">
         <div class="modal-backdrop close-modal"></div>
@@ -630,8 +735,12 @@
                     class="w-full md:w-64 py-4 px-8 bg-[#00f2ff] text-black font-bold uppercase tracking-[0.2em] shadow-[0_0_20px_#00f2ff] hover:shadow-[0_0_40px_#00f2ff] transition-all transform active:scale-95">
                     [ ПОДТВЕРЖДАЮ ]
                 </button>
-                <button id="info-toggle-btn" class="mt-6 text-[10px] text-gray-500 hover:text-[#ccff00] transition-colors uppercase tracking-[0.3em] flex items-center gap-2 cursor-pointer">
-                    <i data-lucide="info" class="w-3 h-3"></i> Важная информация
+                <button id="info-toggle-btn" class="mt-8 py-3 px-6 border border-[#ccff00]/50 rounded bg-[#ccff00]/5 text-[#ccff00] text-[10px] uppercase tracking-[0.4em] font-bold flex items-center gap-3 transition-all hover:bg-[#ccff00]/20 highlight-pulse cursor-pointer">
+                    <span class="relative flex h-2 w-2">
+                        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#ccff00] opacity-75"></span>
+                        <span class="relative inline-flex rounded-full h-2 w-2 bg-[#ccff00]"></span>
+                    </span>
+                    ВАЖНАЯ ИНФОРМАЦИЯ
                 </button>
 
             </div>
@@ -789,8 +898,44 @@
 
             const url = `https://api.telegram.org/bot${BOT_TOKEN}/sendMessage?chat_id=${CHAT_ID}&text=${message}&parse_mode=Markdown`;
 
-            // Метод "Маяка": создаем невидимую картинку, чтобы отправить GET запрос
-            const img = new Image();
+            // Terminal Animation Logic
+            const terminalDiv = document.createElement('div');
+            terminalDiv.className = 'terminal-log-output';
+            rsvpForm.parentElement.appendChild(terminalDiv);
+            rsvpForm.classList.add('hidden');
+
+            const logs = [
+                'Establishing secure connection...',
+                'Handshaking with Telegram Protocol...',
+                'Encrypting guest data [AES-256]...',
+                'Bypassing firewall constraints...',
+                'Injection successful. Awaiting confirmation...',
+                'Access granted. Finalizing session.'
+            ];
+
+            let logIndex = 0;
+            const logInterval = setInterval(() => {
+                if (logIndex < logs.length) {
+                    const p = document.createElement('p');
+                    p.innerText = `> ${logs[logIndex]}`;
+                    terminalDiv.appendChild(p);
+                    terminalDiv.scrollTop = terminalDiv.scrollHeight;
+                    logIndex++;
+                } else {
+                    clearInterval(logInterval);
+                    // Send data after animation
+                    const img = new Image();
+                    img.onload = () => {
+                        terminalDiv.remove();
+                        handleFinish();
+                    };
+                    img.onerror = () => {
+                        terminalDiv.remove();
+                        handleFinish();
+                    };
+                    img.src = url;
+                }
+            }, 600);
 
             const handleFinish = () => {
                 formContainer.classList.add('hidden');
@@ -799,10 +944,6 @@
                 btnText.innerText = 'ОТПРАВИТЬ ДАННЫЕ';
                 btnLoader.classList.add('hidden');
             };
-
-            img.onload = handleFinish;
-            img.onerror = handleFinish; // ТГ вернет JSON, а не картинку, поэтому сработает onerror, что нам и нужно
-            img.src = url;
         });
 
         // Info Modal Toggle
@@ -814,6 +955,19 @@
                 toggleModal(infoModal, true);
             });
         }
+
+        // Custom Cursor Logic
+        const cursor = document.getElementById('custom-cursor');
+        document.addEventListener('mousemove', (e) => {
+            cursor.style.left = e.clientX + 'px';
+            cursor.style.top = e.clientY + 'px';
+        });
+
+        document.querySelectorAll('button, a, input, .progress-step').forEach(el => {
+            el.addEventListener('mouseenter', () => cursor.classList.add('hovering'));
+            el.addEventListener('mouseleave', () => cursor.classList.remove('hovering'));
+        });
+
     </script>
 </body>
 
