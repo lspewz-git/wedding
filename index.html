@@ -222,6 +222,7 @@
             animation: neon-pulse-lime 2s infinite;
         }
 
+
         .loader {
             width: 20px;
             height: 20px;
@@ -666,6 +667,17 @@
                     <p class="text-xs text-gray-400 leading-relaxed max-w-xs">Выгрузка праздничного торта. Переход системы в автономный режим.</p>
                 </div>
             </div>
+
+            <!-- Info Toggle in Roadmap -->
+            <div class="mt-16 flex justify-center">
+                <button id="info-toggle-btn" class="py-4 px-8 border border-[#ccff00]/50 rounded bg-[#ccff00]/5 text-[#ccff00] text-xs uppercase tracking-[0.4em] font-bold flex items-center gap-4 transition-all hover:bg-[#ccff00]/20 highlight-pulse cursor-pointer">
+                    <span class="relative flex h-3 w-3">
+                        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#ccff00] opacity-75"></span>
+                        <span class="relative inline-flex rounded-full h-3 w-3 bg-[#ccff00]"></span>
+                    </span>
+                    ВАЖНАЯ ИНФОРМАЦИЯ
+                </button>
+            </div>
         </div>
     </section>
 
@@ -732,15 +744,8 @@
 
             <div class="flex flex-col items-center justify-center">
                 <button id="confirm-btn"
-                    class="w-full md:w-64 py-4 px-8 bg-[#00f2ff] text-black font-bold uppercase tracking-[0.2em] shadow-[0_0_20px_#00f2ff] hover:shadow-[0_0_40px_#00f2ff] transition-all transform active:scale-95">
+                    class="w-full md:w-64 py-4 px-8 bg-[#00f2ff] text-black font-bold uppercase tracking-[0.2em] shadow-[0_0_20px_#00f2ff] hover:shadow-[0_0_40px_#00f2ff] transition-all transform active:scale-95 cursor-pointer">
                     [ ПОДТВЕРЖДАЮ ]
-                </button>
-                <button id="info-toggle-btn" class="mt-8 py-3 px-6 border border-[#ccff00]/50 rounded bg-[#ccff00]/5 text-[#ccff00] text-[10px] uppercase tracking-[0.4em] font-bold flex items-center gap-3 transition-all hover:bg-[#ccff00]/20 highlight-pulse cursor-pointer">
-                    <span class="relative flex h-2 w-2">
-                        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#ccff00] opacity-75"></span>
-                        <span class="relative inline-flex rounded-full h-2 w-2 bg-[#ccff00]"></span>
-                    </span>
-                    ВАЖНАЯ ИНФОРМАЦИЯ
                 </button>
 
             </div>
@@ -945,6 +950,7 @@
                 btnLoader.classList.add('hidden');
             };
         });
+
 
         // Info Modal Toggle
         const infoToggleBtn = document.getElementById('info-toggle-btn');
