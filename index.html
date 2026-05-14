@@ -172,18 +172,29 @@
             background-size: 30px 30px;
         }
 
-        /* RSVP Modal Styles */
-        #rsvp-modal {
-            opacity: 0;
-            pointer-events: none;
-            transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
-            background: rgba(5, 5, 5, 0.9);
-            backdrop-filter: blur(20px);
+        .modal-container {
+            position: fixed;
+            inset: 0;
+            opacity: 0 !important;
+            pointer-events: none !important;
+            visibility: hidden !important;
+            z-index: 99999 !important;
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        
+        .modal-container.is-open {
+            opacity: 1 !important;
+            pointer-events: auto !important;
+            visibility: visible !important;
         }
 
-        #rsvp-modal.is-open {
-            opacity: 1;
-            pointer-events: auto;
+        .modal-backdrop {
+            position: absolute;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.9);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            z-index: -1;
         }
 
         .neon-input {
@@ -218,10 +229,206 @@
                 transform: rotate(360deg);
             }
         }
+
+        /* Scroll Progress Indicator */
+        .progress-nav {
+            position: fixed;
+            right: 1.5rem;
+            top: 50%;
+            transform: translateY(-50%);
+            z-index: 80;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1.5rem;
+        }
+
+        .progress-line-container {
+            position: relative;
+            width: 2px;
+            height: 120px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 1px;
+            overflow: hidden;
+        }
+
+        .progress-line-fill {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 0%;
+            background: var(--neon-blue);
+            box-shadow: 0 0 10px var(--neon-blue);
+            transition: height 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .progress-step {
+            width: 10px;
+            height: 10px;
+            border: 1px solid rgba(0, 242, 255, 0.5);
+            background: transparent;
+            transform: rotate(45deg);
+            transition: all 0.4s ease;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .progress-step.active {
+            background: var(--neon-blue);
+            border-color: var(--neon-blue);
+            box-shadow: 0 0 15px var(--neon-blue);
+            transform: rotate(45deg) scale(1.2);
+        }
+
+        .progress-step::after {
+            content: attr(data-label);
+            position: absolute;
+            right: 25px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 8px;
+            color: var(--neon-blue);
+            opacity: 0;
+            white-space: nowrap;
+            transition: opacity 0.3s ease;
+            pointer-events: none;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            font-weight: bold;
+        }
+
+        .progress-step:hover::after {
+            opacity: 1;
+        }
+
+        @media (max-width: 768px) {
+            .progress-nav {
+                right: 0.75rem;
+                gap: 1rem;
+            }
+            .progress-line-container {
+                height: 80px;
+            }
+        }
     </style>
 </head>
 
 <body class="grid-bg">
+    <!-- Important Info Modal -->
+    <div id="info-modal" class="modal-container">
+        <div class="modal-backdrop close-modal"></div>
+        <div class="flex min-h-full items-center justify-center p-4">
+            <div class="relative w-full max-w-lg glass-card p-6 md:p-8 rounded-2xl border border-[#ccff00]/30 shadow-[0_0_50px_rgba(204,255,0,0.1)]">
+                <button class="absolute top-4 right-4 text-gray-500 hover:text-white transition-colors close-modal">
+                    <i data-lucide="x" class="w-6 h-6"></i>
+                </button>
+
+                <div class="mb-8">
+                    <h3 class="text-2xl font-bold uppercase mb-2 tracking-tighter text-[#ccff00]">Важная информация</h3>
+                    <p class="text-gray-400 text-sm uppercase tracking-widest">Protocol: Event_Briefing</p>
+                </div>
+
+                <div class="space-y-6">
+                    <div class="p-4 rounded-xl bg-white/5 border border-[#ccff00]/10">
+                        <p class="text-[10px] text-[#ccff00] uppercase font-bold mb-2 flex items-center gap-2">
+                            <i data-lucide="map-pin" class="w-3 h-3"></i> Локация и Транспорт
+                        </p>
+                        <p class="text-xs text-gray-400 leading-relaxed">
+                            Мы будем искренне рады видеть вас на регистрации, но просим учесть, что между ней и банкетом будет перерыв. Для вашего удобства рекомендуем прибывать сразу к началу торжества. Просим вас позаботиться о транспорте самостоятельно — организованный трансфер не предусмотрен.
+                        </p>
+                    </div>
+                    
+                    <div class="p-4 rounded-xl bg-white/5 border border-[#ccff00]/10">
+                        <p class="text-[10px] text-[#ccff00] uppercase font-bold mb-2 flex items-center gap-2">
+                            <i data-lucide="gift" class="w-3 h-3"></i> Ресурсы и Подарки
+                        </p>
+                        <p class="text-xs text-gray-400 leading-relaxed">
+                            Будем признательны за вклад в наш «семейный фонд» (в конвертах). Это самый эргономичный формат.
+                        </p>
+                    </div>
+
+                    <div class="p-4 rounded-xl bg-white/5 border border-[#ccff00]/10">
+                        <p class="text-[10px] text-[#ccff00] uppercase font-bold mb-2 flex items-center gap-2">
+                            <i data-lucide="glass-water" class="w-3 h-3"></i> Барный протокол
+                        </p>
+                        <p class="text-xs text-gray-400 leading-relaxed">
+                            Вместо цветов будем рады бутылочке вашего любимого напитка для нашей домашней коллекции.
+                        </p>
+                    </div>
+                </div>
+
+                <button class="mt-8 w-full py-4 border border-[#ccff00]/30 text-[#ccff00] font-bold uppercase tracking-[0.2em] hover:bg-[#ccff00]/10 transition-all close-modal">
+                    [ ПОНЯТНО ]
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- RSVP Modal -->
+    <div id="rsvp-modal" class="modal-container">
+        <div class="modal-backdrop close-modal"></div>
+        <div class="flex min-h-full items-center justify-center p-4">
+            <div class="relative w-full max-w-lg glass-card p-6 md:p-8 rounded-2xl border border-[#00f2ff]/30 shadow-[0_0_50px_rgba(0,242,255,0.1)]">
+                <button id="close-modal" class="absolute top-4 right-4 text-gray-500 hover:text-white transition-colors">
+                    <i data-lucide="x" class="w-6 h-6"></i>
+                </button>
+
+            <div id="form-container">
+                <h3 class="text-2xl font-bold uppercase mb-2 tracking-tighter text-[#00f2ff]">Регистрация Гостя</h3>
+                <p class="text-gray-400 text-sm mb-8 uppercase tracking-widest">Protocol: Guest_Data_Entry</p>
+
+                <form id="rsvp-form" class="space-y-6">
+                    <div>
+                        <label class="block text-[10px] uppercase tracking-[0.3em] text-[#ccff00] mb-2 font-bold">Ваше
+                            Имя</label>
+                        <input type="text" name="name" required placeholder="Введите полное имя"
+                            class="w-full p-4 rounded-lg neon-input text-sm">
+                    </div>
+                    <div>
+                        <label class="block text-[10px] uppercase tracking-[0.3em] text-[#ccff00] mb-2 font-bold">С кем
+                            придете?</label>
+                        <input type="text" name="guests" placeholder="Имена спутников (если есть)"
+                            class="w-full p-4 rounded-lg neon-input text-sm">
+                    </div>
+                    <button type="submit" id="submit-btn"
+                        class="w-full py-4 bg-[#00f2ff] text-black font-bold uppercase tracking-[0.2em] shadow-[0_0_20px_rgba(0,242,255,0.3)] hover:shadow-[0_0_40px_rgba(0,242,255,0.5)] transition-all flex items-center justify-center gap-3">
+                        <span id="btn-text">ОТПРАВИТЬ ДАННЫЕ</span>
+                        <span id="btn-loader" class="loader hidden"></span>
+                    </button>
+                </form>
+            </div>
+
+            <!-- Success State -->
+            <div id="success-message" class="hidden text-center py-12">
+                <div
+                    class="inline-flex items-center justify-center w-20 h-20 rounded-full bg-[#ccff00]/10 text-[#ccff00] mb-6 shadow-[0_0_30px_rgba(204,255,0,0.2)]">
+                    <i data-lucide="check-circle" class="w-10 h-10"></i>
+                </div>
+                <h3 class="text-3xl font-bold uppercase mb-2 tracking-tighter text-[#ccff00]">Подтверждено</h3>
+                <p class="text-gray-400 text-sm uppercase tracking-widest">Protocol: Access_Granted</p>
+                <button id="finish-btn"
+                    class="mt-8 text-[10px] uppercase tracking-[0.4em] text-[#00f2ff] hover:underline close-modal">Закрыть
+                    терминал</button>
+            </div>
+        </div>
+    </div>
+</div>
+    <!-- Scroll Progress -->
+    <nav class="progress-nav">
+        <div class="text-[10px] text-[#00f2ff] font-bold mb-1 opacity-50" id="progress-counter">01</div>
+        <div class="progress-line-container">
+            <div class="progress-line-fill" id="progress-bar"></div>
+        </div>
+        <div class="flex flex-col gap-4 mt-2">
+            <div class="progress-step active" data-index="0" data-label="Entry"></div>
+            <div class="progress-step" data-index="1" data-label="Subject"></div>
+            <div class="progress-step" data-index="2" data-label="Roadmap"></div>
+            <div class="progress-step" data-index="3" data-label="Grid"></div>
+            <div class="progress-step" data-index="4" data-label="Protocol"></div>
+        </div>
+    </nav>
+
     <!-- Hero Section -->
     <section class="flex flex-col items-center justify-center p-6 text-center">
         <div class="section-content">
@@ -279,7 +486,7 @@
                     </div>
                     <div class="relative glass-card overflow-hidden profile-img-container">
                         <div class="scanline"></div>
-                        <img src="groom.png" alt="The Groom"
+                        <img src="groom.jpg" alt="The Groom"
                             class="w-full grayscale brightness-75 contrast-125 hover:grayscale-0 transition-all duration-700 object-cover aspect-[4/5]">
                         <div class="absolute bottom-0 left-0 w-full p-6 bg-gradient-to-t from-black to-transparent">
                             <p class="text-[10px] text-[#00f2ff] uppercase font-bold tracking-widest mb-1">Subject 01
@@ -295,7 +502,7 @@
                     </div>
                     <div class="relative glass-card overflow-hidden profile-img-container">
                         <div class="scanline" style="animation-delay: 1s;"></div>
-                        <img src="bride.png" alt="The Bride"
+                        <img src="bride.jpg" alt="The Bride"
                             class="w-full grayscale brightness-75 contrast-125 hover:grayscale-0 transition-all duration-700 object-cover aspect-[4/5]">
                         <div class="absolute bottom-0 left-0 w-full p-6 bg-gradient-to-t from-black to-transparent">
                             <p class="text-[10px] text-[#ccff00] uppercase font-bold tracking-widest mb-1">Subject 02
@@ -313,38 +520,45 @@
             <h2 class="text-xs uppercase tracking-[0.5em] text-[#ccff00] mb-12 flex items-center">
                 <i data-lucide="terminal" class="mr-2 w-4 h-4"></i> Event_Roadmap.log
             </h2>
-            <div class="space-y-8 border-l border-gray-800 ml-2 pl-6">
-                <div class="relative">
-                    <div
-                        class="absolute -left-[31px] top-1 w-2 h-2 bg-[#00f2ff] rounded-full shadow-[0_0_10px_#00f2ff]">
+            <div class="space-y-12 border-l border-gray-800 ml-2 pl-6">
+                <div class="relative group">
+                    <div class="absolute -left-[31px] top-1 w-2 h-2 bg-[#00f2ff] rounded-full shadow-[0_0_10px_#00f2ff] group-hover:scale-150 transition-transform"></div>
+                    <div class="flex items-center gap-3 mb-2">
+                        <span class="text-[10px] bg-[#00f2ff]/10 text-[#00f2ff] px-2 py-0.5 rounded border border-[#00f2ff]/20 font-bold tracking-widest">12:15</span>
+                        <span class="text-[8px] text-gray-500 uppercase tracking-[0.2em]">PHASE: SYSTEM_INITIALIZATION</span>
                     </div>
-                    <p class="terminal-log text-gray-500 text-xs mb-1">12:15</p>
-                    <h4 class="text-lg font-bold text-[#00f2ff]">ЦЕРЕМОНИЯ В ЗАГСЕ</h4>
-                    <p class="text-sm text-gray-400">Официальная привязка данных.</p>
+                    <h4 class="text-xl font-bold text-white tracking-tight mb-1">ЦЕРЕМОНИЯ В ЗАГСЕ</h4>
+                    <p class="text-xs text-gray-400 leading-relaxed max-w-xs">Официальная регистрация в базе данных. Синхронизация жизненных циклов.</p>
                 </div>
-                <div class="relative">
-                    <div
-                        class="absolute -left-[31px] top-1 w-2 h-2 bg-[#ccff00] rounded-full shadow-[0_0_10px_#ccff00]">
+
+                <div class="relative group">
+                    <div class="absolute -left-[31px] top-1 w-2 h-2 bg-[#ccff00] rounded-full shadow-[0_0_10px_#ccff00] group-hover:scale-150 transition-transform"></div>
+                    <div class="flex items-center gap-3 mb-2">
+                        <span class="text-[10px] bg-[#ccff00]/10 text-[#ccff00] px-2 py-0.5 rounded border border-[#ccff00]/20 font-bold tracking-widest">16:30</span>
+                        <span class="text-[8px] text-gray-500 uppercase tracking-[0.2em]">PHASE: UNIT_GATHERING</span>
                     </div>
-                    <p class="terminal-log text-gray-500 text-xs mb-1">16:30</p>
-                    <h4 class="text-lg font-bold text-[#ccff00]">НАЧАЛО МЕРОПРИЯТИЯ</h4>
-                    <p class="text-sm text-gray-400">Общий сбор в ресторане.</p>
+                    <h4 class="text-xl font-bold text-white tracking-tight mb-1">WELCOME ZONE</h4>
+                    <p class="text-xs text-gray-400 leading-relaxed max-w-xs">Сбор гостей. Напитки, музыка и первичная калибровка настроения.</p>
                 </div>
-                <div class="relative">
-                    <div
-                        class="absolute -left-[31px] top-1 w-2 h-2 bg-[#00f2ff] rounded-full shadow-[0_0_10px_#00f2ff]">
+
+                <div class="relative group">
+                    <div class="absolute -left-[31px] top-1 w-2 h-2 bg-[#00f2ff] rounded-full shadow-[0_0_10px_#00f2ff] group-hover:scale-150 transition-transform"></div>
+                    <div class="flex items-center gap-3 mb-2">
+                        <span class="text-[10px] bg-[#00f2ff]/10 text-[#00f2ff] px-2 py-0.5 rounded border border-[#00f2ff]/20 font-bold tracking-widest">17:00</span>
+                        <span class="text-[8px] text-gray-500 uppercase tracking-[0.2em]">PHASE: MAIN_PROTOCOL</span>
                     </div>
-                    <p class="terminal-log text-gray-500 text-xs mb-1">17:00</p>
-                    <h4 class="text-lg font-bold text-[#00f2ff]">БАНКЕТ</h4>
-                    <p class="text-sm text-gray-400">Вечеринка, ужин и высокая нагрузка.</p>
+                    <h4 class="text-xl font-bold text-white tracking-tight mb-1">БАНКЕТ</h4>
+                    <p class="text-xs text-gray-400 leading-relaxed max-w-xs">Запуск основного сценария. Высокая нагрузка на праздничные серверы.</p>
                 </div>
-                <div class="relative">
-                    <div
-                        class="absolute -left-[31px] top-1 w-2 h-2 bg-[#ccff00] rounded-full shadow-[0_0_10px_#ccff00]">
+
+                <div class="relative group">
+                    <div class="absolute -left-[31px] top-1 w-2 h-2 bg-[#ccff00] rounded-full shadow-[0_0_10px_#ccff00] group-hover:scale-150 transition-transform"></div>
+                    <div class="flex items-center gap-3 mb-2">
+                        <span class="text-[10px] bg-[#ccff00]/10 text-[#ccff00] px-2 py-0.5 rounded border border-[#ccff00]/20 font-bold tracking-widest">22:00</span>
+                        <span class="text-[8px] text-gray-500 uppercase tracking-[0.2em]">PHASE: SESSION_COMPLETE</span>
                     </div>
-                    <p class="terminal-log text-gray-500 text-xs mb-1">22:00</p>
-                    <h4 class="text-lg font-bold text-[#ccff00]">ФИНАЛ</h4>
-                    <p class="text-sm text-gray-400">Торт и постепенное окончание вечера.</p>
+                    <h4 class="text-xl font-bold text-white tracking-tight mb-1">ФИНАЛ СЕССИИ</h4>
+                    <p class="text-xs text-gray-400 leading-relaxed max-w-xs">Выгрузка праздничного торта. Переход системы в автономный режим.</p>
                 </div>
             </div>
         </div>
@@ -355,7 +569,7 @@
     <!-- The Grid (Map) -->
     <section class="px-6 py-12">
         <div class="max-w-4xl mx-auto section-content">
-            <div class="grid md:grid-cols-2 gap-8 mb-8 items-start">
+            <div class="max-w-2xl mx-auto mb-8">
                 <!-- Address -->
                 <div>
                     <h2 class="text-xs uppercase tracking-[0.5em] text-[#00f2ff] mb-4 flex items-center">
@@ -375,29 +589,6 @@
                             <div class="pt-2 border-t border-white/5">
                                 <p class="text-sm font-bold text-white mb-1">ул. Ширямова, д. 35</p>
                                 <p class="text-gray-500 text-[10px] uppercase tracking-widest">г. Иркутск // Sector 38</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <!-- Gifts Protocol -->
-                <div>
-                    <h2 class="text-xs uppercase tracking-[0.5em] text-[#ccff00] mb-4 flex items-center">
-                        <i data-lucide="database" class="mr-2 w-4 h-4"></i> Resource_Transfer
-                    </h2>
-                    <div class="glass-card p-6 border-l-4 border-[#ccff00] h-full flex flex-col justify-between">
-                        <div class="space-y-3">
-                            <div>
-                                <p class="text-xs text-[#ccff00] uppercase tracking-widest mb-1 opacity-50">Data_Format</p>
-                                <p class="text-2xl font-bold tracking-tight text-white uppercase">Подарки</p>
-                            </div>
-                            <div>
-                                <p class="text-xs text-gray-400 leading-relaxed">
-                                    Ваше присутствие — главный ресурс. Мы будем признательны за <span class="text-white font-bold text-glow">компактные носители</span> (в конвертах).
-                                </p>
-                            </div>
-                            <div class="pt-2 border-t border-white/5">
-                                <p class="text-xs text-[#ccff00] font-bold mb-1 uppercase">No_Bio_Assets</p>
-                                <p class="text-gray-500 text-[10px] uppercase tracking-widest">Вместо цветов: <span class="text-white font-bold">Винтажный эликсир</span> (вино)</p>
                             </div>
                         </div>
                     </div>
@@ -439,60 +630,15 @@
                     class="w-full md:w-64 py-4 px-8 bg-[#00f2ff] text-black font-bold uppercase tracking-[0.2em] shadow-[0_0_20px_#00f2ff] hover:shadow-[0_0_40px_#00f2ff] transition-all transform active:scale-95">
                     [ ПОДТВЕРЖДАЮ ]
                 </button>
+                <button id="info-toggle-btn" class="mt-6 text-[10px] text-gray-500 hover:text-[#ccff00] transition-colors uppercase tracking-[0.3em] flex items-center gap-2 cursor-pointer">
+                    <i data-lucide="info" class="w-3 h-3"></i> Важная информация
+                </button>
+
             </div>
         </div>
         <footer class="py-12 border-t border-gray-900 text-[10px] text-gray-700 uppercase tracking-[0.3em] w-full">
             &copy; 2026 Protocol_Wedding // All rights reserved.
         </footer>
-    </section>
-    <!-- RSVP Modal -->
-    <div id="rsvp-modal" class="fixed inset-0 z-[100] flex items-center justify-center p-6">
-        <div class="absolute inset-0" id="modal-overlay"></div>
-        <div
-            class="relative w-full max-w-lg glass-card p-8 rounded-2xl border border-[#00f2ff]/30 shadow-[0_0_50px_rgba(0,242,255,0.1)]">
-            <button id="close-modal" class="absolute top-4 right-4 text-gray-500 hover:text-white transition-colors">
-                <i data-lucide="x" class="w-6 h-6"></i>
-            </button>
-
-            <div id="form-container">
-                <h3 class="text-2xl font-bold uppercase mb-2 tracking-tighter text-[#00f2ff]">Регистрация Гостя</h3>
-                <p class="text-gray-400 text-sm mb-8 uppercase tracking-widest">Protocol: Guest_Data_Entry</p>
-
-                <form id="rsvp-form" class="space-y-6">
-                    <div>
-                        <label class="block text-[10px] uppercase tracking-[0.3em] text-[#ccff00] mb-2 font-bold">Ваше
-                            Имя</label>
-                        <input type="text" name="name" required placeholder="Введите полное имя"
-                            class="w-full p-4 rounded-lg neon-input text-sm">
-                    </div>
-                    <div>
-                        <label class="block text-[10px] uppercase tracking-[0.3em] text-[#ccff00] mb-2 font-bold">С кем
-                            придете?</label>
-                        <input type="text" name="guests" placeholder="Имена спутников (если есть)"
-                            class="w-full p-4 rounded-lg neon-input text-sm">
-                    </div>
-                    <button type="submit" id="submit-btn"
-                        class="w-full py-4 bg-[#00f2ff] text-black font-bold uppercase tracking-[0.2em] shadow-[0_0_20px_rgba(0,242,255,0.3)] hover:shadow-[0_0_40px_rgba(0,242,255,0.5)] transition-all flex items-center justify-center gap-3">
-                        <span id="btn-text">ОТПРАВИТЬ ДАННЫЕ</span>
-                        <span id="btn-loader" class="loader hidden"></span>
-                    </button>
-                </form>
-            </div>
-
-            <!-- Success State -->
-            <div id="success-message" class="hidden text-center py-12">
-                <div
-                    class="inline-flex items-center justify-center w-20 h-20 rounded-full bg-[#ccff00]/10 text-[#ccff00] mb-6 shadow-[0_0_30px_rgba(204,255,0,0.2)]">
-                    <i data-lucide="check-circle" class="w-10 h-10"></i>
-                </div>
-                <h3 class="text-3xl font-bold uppercase mb-2 tracking-tighter text-[#ccff00]">Подтверждено</h3>
-                <p class="text-gray-400 text-sm uppercase tracking-widest">Protocol: Access_Granted</p>
-                <button id="finish-btn"
-                    class="mt-8 text-[10px] uppercase tracking-[0.4em] text-[#00f2ff] hover:underline">Закрыть
-                    терминал</button>
-            </div>
-        </div>
-    </div>
 
     <!-- Скрытое окно для обхода блокировок браузера -->
     <iframe name="hidden_iframe" id="hidden_iframe" style="display:none;"></iframe>
@@ -536,6 +682,13 @@
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
                     entry.target.classList.add('is-visible');
+                    
+                    // Update scroll progress indicator
+                    const sections = Array.from(document.querySelectorAll('section'));
+                    const index = sections.indexOf(entry.target);
+                    if (index !== -1) {
+                        updateProgressIndicator(index, sections.length);
+                    }
                 } else {
                     // Optional: remove class to animate again when scrolling back
                     entry.target.classList.remove('is-visible');
@@ -543,7 +696,39 @@
             });
         }, observerOptions);
 
+        function updateProgressIndicator(index, total) {
+            const steps = document.querySelectorAll('.progress-step');
+            const fill = document.getElementById('progress-bar');
+            const counter = document.getElementById('progress-counter');
+            
+            steps.forEach((step, i) => {
+                if (i <= index) {
+                    step.classList.add('active');
+                } else {
+                    step.classList.remove('active');
+                }
+            });
+            
+            const progress = (index / (total - 1)) * 100;
+            if (fill) fill.style.height = `${progress}%`;
+            if (counter) counter.innerText = String(index + 1).padStart(2, '0');
+        }
+
+        // Add click events to progress steps
+        document.querySelectorAll('.progress-step').forEach(step => {
+            step.addEventListener('click', () => {
+                const index = parseInt(step.getAttribute('data-index'));
+                const sections = document.querySelectorAll('section');
+                sections[index].scrollIntoView({ behavior: 'smooth' });
+            });
+        });
+
         document.querySelectorAll('.section-content').forEach(section => {
+            observer.observe(section);
+        });
+
+        // Also observe sections directly for progress tracking
+        document.querySelectorAll('section').forEach(section => {
             observer.observe(section);
         });
 
@@ -559,26 +744,34 @@
         const btnText = document.getElementById('btn-text');
         const btnLoader = document.getElementById('btn-loader');
 
-        const toggleModal = (show) => {
+        const toggleModal = (modalElement, show) => {
+            if (!modalElement) return;
             if (show) {
-                modal.classList.add('is-open');
+                modalElement.classList.add('is-open');
                 document.body.style.overflow = 'hidden';
             } else {
-                modal.classList.remove('is-open');
+                modalElement.classList.remove('is-open');
                 document.body.style.overflow = 'auto';
-                // Reset form state after close
-                setTimeout(() => {
-                    formContainer.classList.remove('hidden');
-                    successMessage.classList.add('hidden');
-                    rsvpForm.reset();
-                }, 500);
+                
+                if (modalElement.id === 'rsvp-modal') {
+                    setTimeout(() => {
+                        formContainer.classList.remove('hidden');
+                        successMessage.classList.add('hidden');
+                        rsvpForm.reset();
+                    }, 500);
+                }
             }
         };
 
-        confirmBtn.addEventListener('click', () => toggleModal(true));
-        closeModal.addEventListener('click', () => toggleModal(false));
-        modalOverlay.addEventListener('click', () => toggleModal(false));
-        document.getElementById('finish-btn').addEventListener('click', () => toggleModal(false));
+        if (confirmBtn) {
+            confirmBtn.addEventListener('click', () => toggleModal(modal, true));
+        }
+        
+        // Universal modal closing logic
+        document.querySelectorAll('.modal-container').forEach(m => {
+            const closers = m.querySelectorAll('.close-modal, #close-modal');
+            closers.forEach(btn => btn.addEventListener('click', () => toggleModal(m, false)));
+        });
 
         rsvpForm.addEventListener('submit', (e) => {
             e.preventDefault();
@@ -611,6 +804,16 @@
             img.onerror = handleFinish; // ТГ вернет JSON, а не картинку, поэтому сработает onerror, что нам и нужно
             img.src = url;
         });
+
+        // Info Modal Toggle
+        const infoToggleBtn = document.getElementById('info-toggle-btn');
+        const infoModal = document.getElementById('info-modal');
+
+        if (infoToggleBtn && infoModal) {
+            infoToggleBtn.addEventListener('click', () => {
+                toggleModal(infoModal, true);
+            });
+        }
     </script>
 </body>
 
